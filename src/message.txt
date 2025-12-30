@@ -1,21 +1,15 @@
-import java.util.*;
-
 class Solution {
-    public long solution(int n, int[] works) {
+    public long solution(int n) {
         long answer = 0;
-        Queue<Integer> pq = new PriorityQueue<>(Comparator.reverseOrder());
-        for(int w : works){
-            pq.offer(w);
+        long[] dp = new long[n];
+        dp[0] = 1;
+        if(n == 1) return 1;
+        dp[1] = 2;
+        for(int i=2; i<n; i++){
+            dp[i] = (dp[i-1] + dp[i-2])%1234567;
         }
-        for(int i=n-1; i>=0; i--){
-            int w = pq.poll();
-            w = (w>0) ? w-1: 0;
-            pq.offer(w);
-        }
-        while(!pq.isEmpty()){
-            int w = pq.poll();
-            answer += w * w;
-        }
+        answer = dp[n-1];
+        System.out.println(answer);
         return answer;
     }
 }
