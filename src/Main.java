@@ -1,45 +1,62 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-// DFS
+// DP
 public class Main {
-    static int N = 5;
-    static int[][] grid = new int[N][N];
-    static Set<String> answer = new HashSet<>();
-    static int[] dx = {-1, 1, 0, 0};
-    static int[] dy = {0, 0, -1, 1};
-
-    public static void dfs(int x, int y, int index, int[] temp){
-        temp[index] = grid[x][y];
-        if(index == 5){
-            answer.add(Arrays.toString(temp));
-            return;
-        }
-        for(int k=0; k<4; k++){
-            int nx = x + dx[k];
-            int ny = y + dy[k];
-            if(nx >= 0 && ny >= 0 && nx < N && ny < N){
-                dfs(nx, ny, index+1, temp);
-            }
-        }
-    }
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        for(int i = 0; i<N; i++){
-            String[] str = br.readLine().split(" ");
-            for(int j=0; j<N; j++){
-                grid[i][j] = Integer.parseInt(str[j]);
-            }
+        StringBuilder sb = new StringBuilder();
+        int N = Integer.parseInt(br.readLine());
+        String[] str = br.readLine().split(" ");
+        int[] arr = new int[N];
+        for(int i=0; i<N; i++){
+            arr[i] = Integer.parseInt(str[i]);
         }
 
+        int[] dp = new int[N];
+        int[][] prev = new int[N][2];
+        // prev[0] = new int[]{, -1};
         for(int i=0; i<N; i++){
-            for(int j=0; j<N; j++){
-                dfs(i, j, 0, new int[6]);
+            int max = 0;
+            for(int j=0; j<i; j++){
+                if(arr[j] < arr[i] && dp[j] > max){
+                    max = dp[j];
+                    prev[i] = new int[]{arr[j], j};
+                }
+            }
+            dp[i] = max + 1;
+        }
+
+        // max값과 index 찾기
+        int index = 0;
+        int max = 0;
+        for(int i=0; i<N; i++){
+            if(dp[i] > max){
+                max = dp[i];
+                index = i;
             }
         }
-        System.out.println(answer);
-        System.out.println(answer.size());
+        sb.append(max+"\n");
+
+//        역추적
+        List<Integer> result = new ArrayList<>();
+        result.add(arr[index]);
+        while(true){
+            int[] pr = prev[index];
+            int value = pr[0];
+            if(value == 0) break;
+            result.add(value);
+            index = pr[1];
+        }
+
+//        출력
+        for(int i=result.size()-1; i>=0; i--){
+            sb.append(result.get(i)+" ");
+        }
+        System.out.println(sb);
     }
 }
